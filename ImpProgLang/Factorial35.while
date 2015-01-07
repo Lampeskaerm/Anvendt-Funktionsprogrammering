@@ -1,0 +1,12 @@
+﻿let x: 4; output: 1;
+    rec proc fac(n,y)  while <>(!n,0)
+                   do print toString(!n); 
+                      print toString(!y);
+                      y := *(!n,!y);
+                      n := -(!n,1);
+					  return !y
+                   od     
+in output := fac(x, output);
+   print toString(!x);
+   print toString(!output) 
+end   

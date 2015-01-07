@@ -1,4 +1,4 @@
-# 1 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 1 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
   // Lexer spec. for simple imperative language      Michael R. Hansen 05-01-2014 
 module Lexer
 
@@ -17,12 +17,20 @@ let keyword s =
     | "od"        -> OD 
     | "while"     -> WHILE
     | "do"        -> DO
+    | "proc"      -> PROC
+    | "call"      -> CALL
+    | "rec"       -> REC
+    | "return"    -> RETURN
+    | "if"        -> IF
+    | "then"      -> THEN
+    | "else"      -> ELSE
+    | "fi"        -> FI
     | "true"      -> BOOL(true) 
     | "false"     -> BOOL(false)
     | "toString"  -> NAME("toString")
     | _           -> NAME s  
 
-# 25 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 33 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
 let trans : uint16[] array = 
     [| 
    (* State 0 *)
@@ -85,104 +93,104 @@ and tokenize  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_toke
 and _fslex_tokenize  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 38 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 46 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  tokenize lexbuf 
-# 90 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 98 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 1 -> ( 
-# 39 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 47 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf 
-# 95 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 103 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 2 -> ( 
-# 40 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 48 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  INT<| Int32.Parse(Encoding.UTF8.GetString(lexbuf.Lexeme)) 
-# 100 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 108 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 3 -> ( 
-# 41 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 49 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  let str = (Encoding.UTF8.GetString(lexbuf.Lexeme))
                                  let last = str.Length - 1
                                  STRING (str.Remove(last).Remove(0,1)) 
-# 107 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 115 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 4 -> ( 
-# 44 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 52 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  CONTOF
-# 112 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 120 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 5 -> ( 
-# 45 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 53 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  LPAR  
-# 117 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 125 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 6 -> ( 
-# 46 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 54 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  RPAR  
-# 122 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 130 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 7 -> ( 
-# 47 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 55 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  SEMI  
-# 127 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 135 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 8 -> ( 
-# 48 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 56 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  COLON 
-# 132 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 140 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 9 -> ( 
-# 49 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 57 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  COMMA 
-# 137 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 145 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 10 -> ( 
-# 50 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 58 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  ASG   
-# 142 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 150 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 11 -> ( 
-# 51 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 59 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  NAME("<>") 
-# 147 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 155 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 12 -> ( 
-# 52 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 60 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  NAME("<") 
-# 152 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 160 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 13 -> ( 
-# 53 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 61 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  NAME("*") 
-# 157 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 165 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 14 -> ( 
-# 54 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 62 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  NAME("-") 
-# 162 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 170 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 15 -> ( 
-# 55 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 63 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  NAME("=") 
-# 167 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 175 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 16 -> ( 
-# 56 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 64 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  NAME("+") 
-# 172 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 180 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 17 -> ( 
-# 57 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 65 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  keyword(Encoding.UTF8.GetString(lexbuf.Lexeme)) 
-# 177 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 185 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 18 -> ( 
-# 58 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 66 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  EOF 
-# 182 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 190 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | _ -> failwith "tokenize"
 
-# 60 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fsl"
+# 68 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
 
-# 3000000 "C:\Users\mire\Documents\MRH data\Kurser\02257-15\Project1\Handout\Test\ImpProgLang\Lexer.fs"
+# 3000000 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"

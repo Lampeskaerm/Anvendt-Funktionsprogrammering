@@ -54,15 +54,15 @@ let s2 = parseStm "let n: 4; y: 1
 // Set current directory
 System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__;;
 
-let p3 = parseFromFile "Factorial1.while";;
-// Interpret the statement
-let _ = ignore (stm p3 initEnv Map.empty);;
+//let p3 = parseFromFile "Factorial1.while";;
+//// Interpret the statement
+//let _ = ignore (stm p3 initEnv Map.empty);;
+//
+//let p4 = parseFromFile "Factorial2.while";;
+//let _ = ignore (stm p4 initEnv Map.empty);;
 
-let p4 = parseFromFile "Factorial2.while";;
-let _ = ignore (stm p4 initEnv Map.empty);;
-
- let p5 = parseFromFile "Factorial3.while";;
- let _ = ignore (stm p5 initEnv Map.empty);;
+// let p5 = parseFromFile "Factorial3.while";;
+// let _ = ignore (stm p5 initEnv Map.empty);;
 
 // let p6 = parseFromFile "Factorial4.while";;
 // let _ = ignore (stm p6 initEnv Map.empty);;
@@ -97,3 +97,27 @@ let randomArray = parseDec "proc randomArray(rng, lng)
 //let _ = ignore (stm ap2 basisEnv basisStore);;
 
 
+//let test1 = 
+//    Block
+//        ([VarDec ("x",Int 4); VarDec ("output",Int 1); ProcDec ( "fac", ["n";"y"],
+//             Seq
+//               [While
+//                  (Apply ("<>",[ContOf (Var "n"); Int 0]),
+//                   Seq
+//                     [Asg (Var "y",Apply ("*",[ContOf (Var "n"); ContOf (Var "y")]));
+//                      Asg (Var "n",Apply ("-",[ContOf (Var "n"); Int 1]))])])], 
+//                        Seq 
+//                            [Call ("fac", ["x";"output"]);
+//                             PrintLn (Apply ("toString",[ContOf (Var "x")]));
+//                             PrintLn (Apply ("toString",[ContOf (Var "output")]))]);
+//
+//let _ = ignore (stm test1 initEnv Map.empty);;
+
+//let test2 = parseFromFile "Factorial35.while";;
+//let _ = ignore (stm test2 initEnv Map.empty);;
+
+//let test3 = parseFromFile "Factorial4.while";;
+//let _ = ignore (stm test3 initEnv Map.empty);;
+
+//let test4 = parseFromFile "Factorial5.while";;
+//let _ = ignore (stm test4 initEnv Map.empty);;

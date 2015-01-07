@@ -12,6 +12,8 @@ open AST
 %token COLON COMMA PRINT
 %token LPAR RPAR
 %token EOF
+%token PROC CALL REC RETURN
+%token IF THEN ELSE FI
 
 %start Main Exp ExpList DecList Stm StmList Dec
 %type <Exp> Exp
@@ -31,13 +33,24 @@ Stm:
   | WHILE Exp DO StmList OD				 { While($2,Seq $4) }
   | LET DecList IN StmList END           { Block($2,Seq $4) }
   | PRINT Exp                            { PrintLn $2 }
+  | CALL NAME LPAR ExpList RPAR          { Call($2,$4) }
+  | RETURN Exp							 { Return($2) }
+  | IF Exp THEN StmList ELSE StmList FI  { If($2,Seq $4,Seq $6) }
+  | IF Exp THEN StmList FI               { If1($2,Seq $4) }
 
 StmList:
     Stm                                 { [$1] }
   | Stm SEMI StmList                    { $1 :: $3 } 
+  
+VarList:
+                                          { [] }
+  | NAME                                  { [$1] }
+  | NAME COMMA VarList                    { $1 :: $3 }
 
 Dec: 
-     NAME COLON Exp                       { VarDec($1,$3) }  
+    NAME COLON Exp                       { VarDec($1,$3) }  
+  | PROC NAME LPAR VarList RPAR Stm      { ProcDec($2,$4,$6)}
+  | REC Dec                              { RecDec($2) }
 
 DecList:
                                         { [] } 
@@ -51,7 +64,7 @@ Exp:
   | STRING                               { String $1}
   | CONTOF Exp                           { ContOf $2 }        
   | LPAR Exp RPAR                        { $2 }
-  | NAME LPAR ExpList RPAR               { Apply($1, $3) } 
+  | NAME LPAR ExpList RPAR               { Apply($1, $3) }
 
 ExpList:
                                         { [ ] }
