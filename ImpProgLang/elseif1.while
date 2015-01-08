@@ -1,0 +1,10 @@
+﻿let x: 4
+in 	if =(!x,0)
+	then x := x
+	else if =(!x,4)
+	then x := 40
+	else x := 100
+	fi
+	fi;
+	print toString(!x)
+end   

@@ -65,6 +65,7 @@
     <Compile Include="Interpreter.fs" />
     <Compile Include="Program.fs" />
     <None Include="ArrayProg05.while" />
+    <None Include="elseif1.while" />
     <None Include="Write1.while" />
     <None Include="Factorial35.while" />
     <None Include="Script.fsx" />
@@ -77,11 +78,11 @@
     <None Include="ArrayUtil.while" />
     <None Include="ArrayProg2.while" />
     <None Include="packages.config" />
-    <None Include="Factorial3.while" />
     <None Include="ArrayProg1.while" />
     <None Include="Factorial1.while" />
     <Content Include="README.txt" />
     <None Include="Read1.while" />
+    <None Include="Factorial3.while" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">

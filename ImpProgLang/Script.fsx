@@ -128,5 +128,8 @@ let randomArray = parseDec "proc randomArray(rng, lng)
 //let testRead = parseFromFile "Read1.while";;
 //let _ = ignore (stm testRead initEnv Map.empty);;
 
-let testWrite = parseFromFile "Write1.while";;
-let _ = ignore (stm testWrite initEnv Map.empty);;
+//let testWrite = parseFromFile "Write1.while";;
+//let _ = ignore (stm testWrite initEnv Map.empty);;
+
+let testElseIf = parseFromFile "elseif1.while";;
+let _ = ignore (stm testElseIf initEnv Map.empty);;
