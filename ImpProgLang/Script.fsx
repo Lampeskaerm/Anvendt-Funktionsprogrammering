@@ -87,12 +87,12 @@ let randomArray = parseDec "proc randomArray(rng, lng)
 // Auxiliary procedures on arrays are in the file "ArrayUtil.while"
 // They are used to built up a basic environment and a basic store
 //let arrayUtilDecs = parseDecListFromFile "ArrayUtil.while";;
-
+//
 //let (basisEnv, basisStore) = decList arrayUtilDecs initEnv Map.empty;; 
-
+//
 //let ap1 = parseFromFile"ArrayProg1.while";; 
 //let _ = ignore (stm ap1 basisEnv basisStore);;
-
+//
 //let ap2 = parseFromFile"ArrayProg2.while";; 
 //let _ = ignore (stm ap2 basisEnv basisStore);;
 
@@ -121,3 +121,6 @@ let randomArray = parseDec "proc randomArray(rng, lng)
 
 //let test4 = parseFromFile "Factorial5.while";;
 //let _ = ignore (stm test4 initEnv Map.empty);;
+
+//let test5 = parseFromFile "ArrayProg05.while";;
+//let _ = ignore (stm test5 initEnv Map.empty);;

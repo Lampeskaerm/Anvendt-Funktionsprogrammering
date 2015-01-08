@@ -14,6 +14,8 @@ open AST
 %token EOF
 %token PROC CALL REC RETURN
 %token IF THEN ELSE FI
+%token LSQ RSQ
+%token DOT LENGTH
 
 %start Main Exp ExpList DecList Stm StmList Dec
 %type <Exp> Exp
@@ -37,6 +39,7 @@ Stm:
   | RETURN Exp							 { Return($2) }
   | IF Exp THEN StmList ELSE StmList FI  { If($2,Seq $4,Seq $6) }
   | IF Exp THEN StmList FI               { If1($2,Seq $4) }
+  | Exp ASG Exp							 { Asg($1, $3) }
 
 StmList:
     Stm                                 { [$1] }
@@ -49,6 +52,7 @@ VarList:
 
 Dec: 
     NAME COLON Exp                       { VarDec($1,$3) }  
+  | NAME LSQ Exp RSQ COLON Exp           { ArrayDec($1,$3,$6) }
   | PROC NAME LPAR VarList RPAR Stm      { ProcDec($2,$4,$6)}
   | REC Dec                              { RecDec($2) }
 
@@ -65,6 +69,8 @@ Exp:
   | CONTOF Exp                           { ContOf $2 }        
   | LPAR Exp RPAR                        { $2 }
   | NAME LPAR ExpList RPAR               { Apply($1, $3) }
+  | NAME DOT LENGTH                      { Length($1) }
+  | NAME LSQ Exp RSQ                     { ArrayExp($1,$3) }
 
 ExpList:
                                         { [ ] }

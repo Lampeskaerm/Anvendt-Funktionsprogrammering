@@ -27,6 +27,7 @@ let keyword s =
     | "true"      -> BOOL(true) 
     | "false"     -> BOOL(false)
     | "toString"  -> NAME("toString")
+    | "length"    -> LENGTH
     | _           -> NAME s  
 }
 
@@ -56,12 +57,15 @@ rule tokenize =
   | ":"         { COLON }
   | ","         { COMMA }
   | ":="        { ASG   }
+  | "."         { DOT }
   | "<>"        { NAME("<>") }
   | "<"         { NAME("<") } 
   | "*"         { NAME("*") }
   | "-"         { NAME("-") }
   | "="         { NAME("=") }
   | "+"         { NAME("+") }   
+  | "["         { LSQ }
+  | "]"         { RSQ }
   | identifier  { keyword(Encoding.UTF8.GetString(lexbuf.Lexeme)) }
   | eof         { EOF }
 

@@ -59,6 +59,23 @@ let rec exp e (env:Env) (store:Store) =
     | Int i       -> (IntVal i, store)
     | Bool b      -> (BoolVal b,store)
     | String s    -> (StringVal s,store)
+    | Length a    -> match Map.tryFind a env with
+                     | None -> failwith "Array isn't initialised"
+                     | Some (Reference loc) -> match Map.tryFind loc store with
+                                               | None -> failwith "Location of array isn't in store"
+                                               | Some (ArrayCnt arr) -> (IntVal arr.Length, store)
+                                               | _ -> failwith "What you are searching for is not an array"
+                     | _ -> failwith "Not returning a location"
+    | ArrayExp(name, pos) -> let p = match (exp pos env store) with
+                                     | (IntVal v,s) -> v
+                                     | _ -> failwith "position in is not an integer"
+                             match Map.tryFind name env with
+                             | None -> failwith "Array isn't initialised"
+                             | Some (Reference loc) -> match Map.tryFind loc store with
+                                                       | None -> failwith "Location of array isn't in store"
+                                                       | Some (ArrayCnt arr) -> (arr.[p], store)
+                                                       | _ -> failwith "What you are searching for is not an array"
+                             | _ -> failwith "Not returning a location"
 
 and expList es env store = 
     match es with 
@@ -71,11 +88,26 @@ and expList es env store =
 // stm: Stm -> Env -> Store -> option<Value> * Store
 and stm st (env:Env) (store:Store) = 
     match st with 
-    | Asg(el,e) -> let (res,store1) = exp e env store
-                   let (resl, store2) = exp el env store1
-                   match resl with 
-                   | Reference loc -> (None, Map.add loc (SimpVal res) store2) 
-                   | _                               -> failwith "type error"
+    | Asg(el,e) -> match el with
+                   | ArrayExp(n,p) -> let value = match (exp e env store) with
+                                                  | (v,s) -> v
+                                      let pos = match (exp p env store) with
+                                                | (IntVal v,s) -> v
+                                                | _ -> failwith "Position is not an integer"
+                                      match Map.tryFind n env with
+                                      | None -> failwith "Array isn't initialised"
+                                      | Some (Reference loc) -> match Map.tryFind loc store with
+                                                                | None -> failwith "Location of array isn't in store"
+                                                                | Some (ArrayCnt arr) -> arr.[pos] <- value
+                                                                                         (None, store)
+                                                                | _ -> failwith "What you are searching for is not an array"
+                                      | _ -> failwith "Not returning a location"
+                   | _ ->  let (res,store1) = exp e env store
+                           let (resl, store2) = exp el env store1
+                           match resl with 
+                           | Reference loc -> (None, Map.add loc (SimpVal res) store2) 
+                           | _                               -> failwith "type error"
+                   
                    
          
     | PrintLn e -> match exp e env store with
@@ -139,7 +171,19 @@ and dec d env store =
                             let store2 = Map.add loc (Proc closure) store
                             (env2, store2)
     | RecDec(p) -> dec p env store
-
+    | ArrayDec(name, size, value) ->   let loc = nextLoc()
+                                       match exp value env store with
+                                       | (IntVal _ as res, store1)
+                                       | (BoolVal _ as res, store1)
+                                       | (StringVal _ as res, store1)
+                                                                    ->  let env2 = Map.add name (Reference loc) env
+                                                                        match exp size env store with
+                                                                        | (IntVal s, _) -> 
+                                                                                            let array = Array.init s (fun acc -> res)
+                                                                                            let store2 = Map.add loc (ArrayCnt array) store1
+                                                                                            (env2, store2)
+                                                                        | _ -> failwith "Size of array is not an integer."
+                                       | _ -> failwith "Values in array neither int, bool nor string"
 
 
 // Adds variables to an environment

@@ -8,6 +8,8 @@ type Exp = | Int of int
            | Var of string 
            | ContOf of Exp 
            | Apply of string * List<Exp>
+           | Length of string
+           | ArrayExp of string * Exp
 
 and  Stm = | Asg of Exp * Exp
            | PrintLn of Exp
@@ -22,6 +24,7 @@ and  Stm = | Asg of Exp * Exp
 and Dec  = | VarDec of string * Exp
            | ProcDec of string * List<string> * Stm
            | RecDec of Dec
+           | ArrayDec of string * Exp * Exp
 
 
 
