@@ -29,9 +29,11 @@ let keyword s =
     | "false"     -> BOOL(false)
     | "toString"  -> NAME("toString")
     | "length"    -> LENGTH
+    | "readFile"  -> READ
+    | "writeToFile" -> WRITE
     | _           -> NAME s  
 
-# 34 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 36 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
 let trans : uint16[] array = 
     [| 
    (* State 0 *)
@@ -100,119 +102,119 @@ and tokenize  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_toke
 and _fslex_tokenize  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 47 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 49 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  tokenize lexbuf 
-# 105 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 107 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 1 -> ( 
-# 48 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 50 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf 
-# 110 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 112 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 2 -> ( 
-# 49 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 51 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  INT<| Int32.Parse(Encoding.UTF8.GetString(lexbuf.Lexeme)) 
-# 115 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 117 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 3 -> ( 
-# 50 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 52 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  let str = (Encoding.UTF8.GetString(lexbuf.Lexeme))
                                  let last = str.Length - 1
                                  STRING (str.Remove(last).Remove(0,1)) 
-# 122 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 124 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 4 -> ( 
-# 53 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 55 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  CONTOF
-# 127 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 129 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 5 -> ( 
-# 54 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 56 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  LPAR  
-# 132 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 134 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 6 -> ( 
-# 55 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 57 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  RPAR  
-# 137 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 139 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 7 -> ( 
-# 56 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 58 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  SEMI  
-# 142 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 144 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 8 -> ( 
-# 57 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 59 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  COLON 
-# 147 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 149 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 9 -> ( 
-# 58 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 60 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  COMMA 
-# 152 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 154 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 10 -> ( 
-# 59 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 61 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  ASG   
-# 157 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 159 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 11 -> ( 
-# 60 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 62 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  DOT 
-# 162 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 164 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 12 -> ( 
-# 61 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 63 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  NAME("<>") 
-# 167 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 169 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 13 -> ( 
-# 62 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 64 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  NAME("<") 
-# 172 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 174 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 14 -> ( 
-# 63 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 65 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  NAME("*") 
-# 177 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 179 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 15 -> ( 
-# 64 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 66 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  NAME("-") 
-# 182 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 184 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 16 -> ( 
-# 65 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 67 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  NAME("=") 
-# 187 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 189 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 17 -> ( 
-# 66 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 68 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  NAME("+") 
-# 192 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 194 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 18 -> ( 
-# 67 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 69 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  LSQ 
-# 197 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 199 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 19 -> ( 
-# 68 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 70 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  RSQ 
-# 202 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 204 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 20 -> ( 
-# 69 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 71 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  keyword(Encoding.UTF8.GetString(lexbuf.Lexeme)) 
-# 207 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 209 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | 21 -> ( 
-# 70 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 72 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
                                  EOF 
-# 212 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
+# 214 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"
           )
   | _ -> failwith "tokenize"
 
-# 72 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
+# 74 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fsl"
 
 # 3000000 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Lexer.fs"

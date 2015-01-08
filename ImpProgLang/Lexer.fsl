@@ -28,6 +28,8 @@ let keyword s =
     | "false"     -> BOOL(false)
     | "toString"  -> NAME("toString")
     | "length"    -> LENGTH
+    | "readFile"  -> READ
+    | "writeToFile" -> WRITE
     | _           -> NAME s  
 }
 

@@ -16,6 +16,7 @@ open AST
 %token IF THEN ELSE FI
 %token LSQ RSQ
 %token DOT LENGTH
+%token READ WRITE
 
 %start Main Exp ExpList DecList Stm StmList Dec
 %type <Exp> Exp
@@ -35,14 +36,18 @@ Stm:
   | WHILE Exp DO StmList OD				 { While($2,Seq $4) }
   | LET DecList IN StmList END           { Block($2,Seq $4) }
   | PRINT Exp                            { PrintLn $2 }
+  | PRINT Stm                            { PrintStm $2 }
   | CALL NAME LPAR ExpList RPAR          { Call($2,$4) }
   | RETURN Exp							 { Return($2) }
   | IF Exp THEN StmList ELSE StmList FI  { If($2,Seq $4,Seq $6) }
   | IF Exp THEN StmList FI               { If1($2,Seq $4) }
   | Exp ASG Exp							 { Asg($1, $3) }
+  | READ LPAR Exp RPAR                   { Read($3) } 
+  | WRITE LPAR ExpList RPAR              { Write($3) }
 
 StmList:
-    Stm                                 { [$1] }
+										{[]}
+  |  Stm                                 { [$1] }
   | Stm SEMI StmList                    { $1 :: $3 } 
   
 VarList:

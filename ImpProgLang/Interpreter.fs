@@ -8,6 +8,7 @@ module Interpreter
 
 open System
 open AST
+open System.IO
 
 type Location = int
 type Value    = | IntVal of int 
@@ -113,7 +114,12 @@ and stm st (env:Env) (store:Store) =
     | PrintLn e -> match exp e env store with
                    | (StringVal s,store1) -> (printfn "%s" s; (None,store1))
                    | _                    -> failwith "error"                  
-                                                                 
+    | PrintStm s -> match s with
+                    | Read(_) -> match stm s env store with
+                                 | (Some (StringVal st),_) -> (printfn "%s" st; (None,store))
+                                 | _ -> failwith "Not returning a string"
+                                 
+                    | _ -> failwith "this function is for filereading/writing only"
                                            
     | Seq []        -> (None,store)
     | Seq (st::sts) -> match stm st env store with 
@@ -147,13 +153,27 @@ and stm st (env:Env) (store:Store) =
                     | (BoolVal b, _) when b -> stm st env store
                     | (BoolVal b, _) -> (None, store)
                     | _ -> failwith "Not a legal expression"
+    | Read(file) -> match exp file env store with
+                    | (StringVal s, _) -> if File.Exists(s)
+                                          then (Some(StringVal (File.ReadAllText(s))),store)
+                                          else failwith "File doesn't exist"
+                    | _ -> failwith "Filename is not a string"
+    | Write(l) -> match l with
+                  | [file;content] ->   match exp file env store with
+                                        | (StringVal f, _) -> match exp content env store with
+                                                              | (StringVal c,_) -> File.WriteAllText(f,c)
+                                                                                   (None,store)
+                                                              | _ -> failwith "The content you are trying to write to the file is not a string."
+                                        | _ -> failwith "The filename is not a string"
+                  | _ -> failwith "2 parameters is needed. (filename, content)"
+                     
     
 and decList ds env store = 
     match ds with
     | []       -> (env,store)
     | d::drest -> let (env1,store1) = dec d env store
                   decList drest env1 store1
-
+//dec: Dec -> Env -> Store -> Env*Store
 and dec d env store =
     match d with 
     | VarDec(s,e) -> let loc = nextLoc()
@@ -170,7 +190,9 @@ and dec d env store =
                             let closure = (l, env2, stm)
                             let store2 = Map.add loc (Proc closure) store
                             (env2, store2)
-    | RecDec(p) -> dec p env store
+    | RecDec(p) -> match p with
+                   | ProcDec(_) -> dec p env store
+                   | _ -> failwith "You are trying to run something recursively that is not a function"
     | ArrayDec(name, size, value) ->   let loc = nextLoc()
                                        match exp value env store with
                                        | (IntVal _ as res, store1)

@@ -1,0 +1,5 @@
+﻿let	x: "writeEx.txt";
+	y: "THIS IS A TEST"
+in writeToFile(!x,!y);
+	print readFile(!x)
+end

@@ -22,7 +22,7 @@ let parseString (text:string) =
 // Parse a file. (A statement is parsed) 
 let parseFromFile filename =
    if File.Exists(filename)    
-   then parseString(File.ReadAllText(filename))
+   then parseString(File.ReadAllText(filename)) 
    else invalidArg "ParserUtil" "File not found"
 
 // Parse a string. (A declaration list is parsed)  

@@ -10,6 +10,8 @@ open AST
 # 10 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
 // This type is the type of tokens accepted by the parser
 type token = 
+  | READ
+  | WRITE
   | DOT
   | LENGTH
   | LSQ
@@ -46,6 +48,8 @@ type token =
   | INT of (int)
 // This type is used to give symbolic names to token indexes, useful for error messages
 type tokenId = 
+    | TOKEN_READ
+    | TOKEN_WRITE
     | TOKEN_DOT
     | TOKEN_LENGTH
     | TOKEN_LSQ
@@ -103,80 +107,84 @@ type nonTerminalId =
 // This function maps tokens to integers indexes
 let tagOfToken (t:token) = 
   match t with
-  | DOT  -> 0 
-  | LENGTH  -> 1 
-  | LSQ  -> 2 
-  | RSQ  -> 3 
-  | IF  -> 4 
-  | THEN  -> 5 
-  | ELSE  -> 6 
-  | FI  -> 7 
-  | PROC  -> 8 
-  | CALL  -> 9 
-  | REC  -> 10 
-  | RETURN  -> 11 
-  | EOF  -> 12 
-  | LPAR  -> 13 
-  | RPAR  -> 14 
-  | COLON  -> 15 
-  | COMMA  -> 16 
-  | PRINT  -> 17 
-  | ASG  -> 18 
-  | SKIP  -> 19 
-  | SEMI  -> 20 
-  | WHILE  -> 21 
-  | DO  -> 22 
-  | OD  -> 23 
-  | CONTOF  -> 24 
-  | LET  -> 25 
-  | IN  -> 26 
-  | END  -> 27 
-  | TRUE  -> 28 
-  | FALSE  -> 29 
-  | NAME _ -> 30 
-  | STRING _ -> 31 
-  | BOOL _ -> 32 
-  | INT _ -> 33 
+  | READ  -> 0 
+  | WRITE  -> 1 
+  | DOT  -> 2 
+  | LENGTH  -> 3 
+  | LSQ  -> 4 
+  | RSQ  -> 5 
+  | IF  -> 6 
+  | THEN  -> 7 
+  | ELSE  -> 8 
+  | FI  -> 9 
+  | PROC  -> 10 
+  | CALL  -> 11 
+  | REC  -> 12 
+  | RETURN  -> 13 
+  | EOF  -> 14 
+  | LPAR  -> 15 
+  | RPAR  -> 16 
+  | COLON  -> 17 
+  | COMMA  -> 18 
+  | PRINT  -> 19 
+  | ASG  -> 20 
+  | SKIP  -> 21 
+  | SEMI  -> 22 
+  | WHILE  -> 23 
+  | DO  -> 24 
+  | OD  -> 25 
+  | CONTOF  -> 26 
+  | LET  -> 27 
+  | IN  -> 28 
+  | END  -> 29 
+  | TRUE  -> 30 
+  | FALSE  -> 31 
+  | NAME _ -> 32 
+  | STRING _ -> 33 
+  | BOOL _ -> 34 
+  | INT _ -> 35 
 
 // This function maps integers indexes to symbolic token ids
 let tokenTagToTokenId (tokenIdx:int) = 
   match tokenIdx with
-  | 0 -> TOKEN_DOT 
-  | 1 -> TOKEN_LENGTH 
-  | 2 -> TOKEN_LSQ 
-  | 3 -> TOKEN_RSQ 
-  | 4 -> TOKEN_IF 
-  | 5 -> TOKEN_THEN 
-  | 6 -> TOKEN_ELSE 
-  | 7 -> TOKEN_FI 
-  | 8 -> TOKEN_PROC 
-  | 9 -> TOKEN_CALL 
-  | 10 -> TOKEN_REC 
-  | 11 -> TOKEN_RETURN 
-  | 12 -> TOKEN_EOF 
-  | 13 -> TOKEN_LPAR 
-  | 14 -> TOKEN_RPAR 
-  | 15 -> TOKEN_COLON 
-  | 16 -> TOKEN_COMMA 
-  | 17 -> TOKEN_PRINT 
-  | 18 -> TOKEN_ASG 
-  | 19 -> TOKEN_SKIP 
-  | 20 -> TOKEN_SEMI 
-  | 21 -> TOKEN_WHILE 
-  | 22 -> TOKEN_DO 
-  | 23 -> TOKEN_OD 
-  | 24 -> TOKEN_CONTOF 
-  | 25 -> TOKEN_LET 
-  | 26 -> TOKEN_IN 
-  | 27 -> TOKEN_END 
-  | 28 -> TOKEN_TRUE 
-  | 29 -> TOKEN_FALSE 
-  | 30 -> TOKEN_NAME 
-  | 31 -> TOKEN_STRING 
-  | 32 -> TOKEN_BOOL 
-  | 33 -> TOKEN_INT 
-  | 36 -> TOKEN_end_of_input
-  | 34 -> TOKEN_error
+  | 0 -> TOKEN_READ 
+  | 1 -> TOKEN_WRITE 
+  | 2 -> TOKEN_DOT 
+  | 3 -> TOKEN_LENGTH 
+  | 4 -> TOKEN_LSQ 
+  | 5 -> TOKEN_RSQ 
+  | 6 -> TOKEN_IF 
+  | 7 -> TOKEN_THEN 
+  | 8 -> TOKEN_ELSE 
+  | 9 -> TOKEN_FI 
+  | 10 -> TOKEN_PROC 
+  | 11 -> TOKEN_CALL 
+  | 12 -> TOKEN_REC 
+  | 13 -> TOKEN_RETURN 
+  | 14 -> TOKEN_EOF 
+  | 15 -> TOKEN_LPAR 
+  | 16 -> TOKEN_RPAR 
+  | 17 -> TOKEN_COLON 
+  | 18 -> TOKEN_COMMA 
+  | 19 -> TOKEN_PRINT 
+  | 20 -> TOKEN_ASG 
+  | 21 -> TOKEN_SKIP 
+  | 22 -> TOKEN_SEMI 
+  | 23 -> TOKEN_WHILE 
+  | 24 -> TOKEN_DO 
+  | 25 -> TOKEN_OD 
+  | 26 -> TOKEN_CONTOF 
+  | 27 -> TOKEN_LET 
+  | 28 -> TOKEN_IN 
+  | 29 -> TOKEN_END 
+  | 30 -> TOKEN_TRUE 
+  | 31 -> TOKEN_FALSE 
+  | 32 -> TOKEN_NAME 
+  | 33 -> TOKEN_STRING 
+  | 34 -> TOKEN_BOOL 
+  | 35 -> TOKEN_INT 
+  | 38 -> TOKEN_end_of_input
+  | 36 -> TOKEN_error
   | _ -> failwith "tokenTagToTokenId: bad token"
 
 /// This function maps production indexes returned in syntax errors to strings representing the non terminal that would be produced by that production
@@ -199,38 +207,44 @@ let prodIdxToNonTerminal (prodIdx:int) =
     | 14 -> NONTERM_Stm 
     | 15 -> NONTERM_Stm 
     | 16 -> NONTERM_Stm 
-    | 17 -> NONTERM_StmList 
-    | 18 -> NONTERM_StmList 
-    | 19 -> NONTERM_VarList 
-    | 20 -> NONTERM_VarList 
-    | 21 -> NONTERM_VarList 
-    | 22 -> NONTERM_Dec 
-    | 23 -> NONTERM_Dec 
-    | 24 -> NONTERM_Dec 
-    | 25 -> NONTERM_Dec 
-    | 26 -> NONTERM_DecList 
-    | 27 -> NONTERM_DecList 
-    | 28 -> NONTERM_DecList 
-    | 29 -> NONTERM_Exp 
-    | 30 -> NONTERM_Exp 
-    | 31 -> NONTERM_Exp 
-    | 32 -> NONTERM_Exp 
+    | 17 -> NONTERM_Stm 
+    | 18 -> NONTERM_Stm 
+    | 19 -> NONTERM_Stm 
+    | 20 -> NONTERM_StmList 
+    | 21 -> NONTERM_StmList 
+    | 22 -> NONTERM_StmList 
+    | 23 -> NONTERM_VarList 
+    | 24 -> NONTERM_VarList 
+    | 25 -> NONTERM_VarList 
+    | 26 -> NONTERM_Dec 
+    | 27 -> NONTERM_Dec 
+    | 28 -> NONTERM_Dec 
+    | 29 -> NONTERM_Dec 
+    | 30 -> NONTERM_DecList 
+    | 31 -> NONTERM_DecList 
+    | 32 -> NONTERM_DecList 
     | 33 -> NONTERM_Exp 
     | 34 -> NONTERM_Exp 
     | 35 -> NONTERM_Exp 
     | 36 -> NONTERM_Exp 
     | 37 -> NONTERM_Exp 
-    | 38 -> NONTERM_ExpList 
-    | 39 -> NONTERM_ExpList 
-    | 40 -> NONTERM_ExpList 
+    | 38 -> NONTERM_Exp 
+    | 39 -> NONTERM_Exp 
+    | 40 -> NONTERM_Exp 
+    | 41 -> NONTERM_Exp 
+    | 42 -> NONTERM_ExpList 
+    | 43 -> NONTERM_ExpList 
+    | 44 -> NONTERM_ExpList 
     | _ -> failwith "prodIdxToNonTerminal: bad production index"
 
-let _fsyacc_endOfInputTag = 36 
-let _fsyacc_tagOfErrorTerminal = 34
+let _fsyacc_endOfInputTag = 38 
+let _fsyacc_tagOfErrorTerminal = 36
 
 // This function gets the name of a token as a string
 let token_to_string (t:token) = 
   match t with 
+  | READ  -> "READ" 
+  | WRITE  -> "WRITE" 
   | DOT  -> "DOT" 
   | LENGTH  -> "LENGTH" 
   | LSQ  -> "LSQ" 
@@ -269,6 +283,8 @@ let token_to_string (t:token) =
 // This function gets the data carried by a token as an object
 let _fsyacc_dataOfToken (t:token) = 
   match t with 
+  | READ  -> (null : System.Object) 
+  | WRITE  -> (null : System.Object) 
   | DOT  -> (null : System.Object) 
   | LENGTH  -> (null : System.Object) 
   | LSQ  -> (null : System.Object) 
@@ -303,18 +319,18 @@ let _fsyacc_dataOfToken (t:token) =
   | STRING _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | BOOL _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | INT _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
-let _fsyacc_gotos = [| 0us; 65535us; 0us; 65535us; 0us; 65535us; 0us; 65535us; 0us; 65535us; 0us; 65535us; 0us; 65535us; 1us; 65535us; 0us; 1us; 9us; 65535us; 0us; 14us; 8us; 9us; 10us; 49us; 21us; 49us; 26us; 49us; 40us; 49us; 42us; 49us; 50us; 49us; 67us; 68us; 6us; 65535us; 10us; 11us; 21us; 22us; 26us; 27us; 40us; 41us; 42us; 43us; 50us; 51us; 2us; 65535us; 53us; 54us; 65us; 66us; 5us; 65535us; 6us; 71us; 12us; 13us; 24us; 71us; 69us; 70us; 72us; 71us; 3us; 65535us; 6us; 7us; 24us; 25us; 72us; 73us; 26us; 65535us; 0us; 46us; 2us; 3us; 4us; 91us; 8us; 46us; 10us; 46us; 17us; 18us; 19us; 20us; 21us; 46us; 26us; 46us; 29us; 30us; 33us; 91us; 36us; 37us; 38us; 39us; 40us; 46us; 42us; 46us; 47us; 48us; 50us; 46us; 56us; 57us; 58us; 59us; 61us; 62us; 67us; 46us; 78us; 79us; 80us; 81us; 83us; 91us; 88us; 89us; 92us; 91us; 4us; 65535us; 4us; 5us; 33us; 34us; 83us; 84us; 92us; 93us; |]
-let _fsyacc_sparseGotoTableRowOffsets = [|0us; 1us; 2us; 3us; 4us; 5us; 6us; 7us; 9us; 19us; 26us; 29us; 35us; 39us; 66us; |]
-let _fsyacc_stateToProdIdxsTableElements = [| 1us; 0us; 1us; 0us; 1us; 1us; 1us; 1us; 1us; 2us; 1us; 2us; 1us; 3us; 1us; 3us; 1us; 4us; 1us; 4us; 1us; 5us; 1us; 5us; 1us; 6us; 1us; 6us; 1us; 7us; 1us; 7us; 5us; 8us; 29us; 35us; 36us; 37us; 1us; 8us; 1us; 8us; 1us; 9us; 1us; 9us; 1us; 9us; 1us; 9us; 1us; 9us; 1us; 10us; 1us; 10us; 1us; 10us; 1us; 10us; 1us; 10us; 1us; 11us; 1us; 11us; 1us; 12us; 1us; 12us; 1us; 12us; 1us; 12us; 1us; 12us; 1us; 13us; 1us; 13us; 2us; 14us; 15us; 2us; 14us; 15us; 2us; 14us; 15us; 2us; 14us; 15us; 1us; 14us; 1us; 14us; 1us; 14us; 1us; 15us; 1us; 16us; 1us; 16us; 1us; 16us; 2us; 17us; 18us; 1us; 18us; 1us; 18us; 2us; 20us; 21us; 1us; 21us; 1us; 21us; 2us; 22us; 23us; 1us; 22us; 1us; 22us; 1us; 23us; 1us; 23us; 1us; 23us; 1us; 23us; 1us; 23us; 1us; 24us; 1us; 24us; 1us; 24us; 1us; 24us; 1us; 24us; 1us; 24us; 1us; 25us; 1us; 25us; 2us; 27us; 28us; 1us; 28us; 1us; 28us; 4us; 29us; 35us; 36us; 37us; 1us; 30us; 1us; 31us; 1us; 32us; 1us; 33us; 1us; 33us; 1us; 34us; 1us; 34us; 1us; 34us; 1us; 35us; 1us; 35us; 1us; 35us; 1us; 36us; 1us; 36us; 1us; 37us; 1us; 37us; 1us; 37us; 2us; 39us; 40us; 1us; 40us; 1us; 40us; |]
-let _fsyacc_stateToProdIdxsTableRowOffsets = [|0us; 2us; 4us; 6us; 8us; 10us; 12us; 14us; 16us; 18us; 20us; 22us; 24us; 26us; 28us; 30us; 32us; 38us; 40us; 42us; 44us; 46us; 48us; 50us; 52us; 54us; 56us; 58us; 60us; 62us; 64us; 66us; 68us; 70us; 72us; 74us; 76us; 78us; 80us; 83us; 86us; 89us; 92us; 94us; 96us; 98us; 100us; 102us; 104us; 106us; 109us; 111us; 113us; 116us; 118us; 120us; 123us; 125us; 127us; 129us; 131us; 133us; 135us; 137us; 139us; 141us; 143us; 145us; 147us; 149us; 151us; 153us; 156us; 158us; 160us; 165us; 167us; 169us; 171us; 173us; 175us; 177us; 179us; 181us; 183us; 185us; 187us; 189us; 191us; 193us; 195us; 197us; 200us; 202us; |]
-let _fsyacc_action_rows = 94
-let _fsyacc_actionTableElements = [|12us; 32768us; 4us; 38us; 9us; 31us; 11us; 36us; 13us; 80us; 17us; 29us; 21us; 19us; 24us; 78us; 25us; 24us; 30us; 16us; 31us; 77us; 32us; 76us; 33us; 75us; 0us; 49152us; 6us; 32768us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 0us; 49152us; 6us; 16422us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 0us; 49152us; 3us; 16410us; 8us; 63us; 10us; 69us; 30us; 55us; 0us; 49152us; 12us; 32768us; 4us; 38us; 9us; 31us; 11us; 36us; 13us; 80us; 17us; 29us; 21us; 19us; 24us; 78us; 25us; 24us; 30us; 16us; 31us; 77us; 32us; 76us; 33us; 75us; 0us; 49152us; 12us; 32768us; 4us; 38us; 9us; 31us; 11us; 36us; 13us; 80us; 17us; 29us; 21us; 19us; 24us; 78us; 25us; 24us; 30us; 16us; 31us; 77us; 32us; 76us; 33us; 75us; 0us; 49152us; 3us; 32768us; 8us; 63us; 10us; 69us; 30us; 55us; 0us; 49152us; 1us; 32768us; 12us; 15us; 0us; 16391us; 4us; 16413us; 0us; 86us; 2us; 88us; 13us; 83us; 18us; 17us; 6us; 32768us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 0us; 16392us; 6us; 32768us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 1us; 32768us; 22us; 21us; 12us; 32768us; 4us; 38us; 9us; 31us; 11us; 36us; 13us; 80us; 17us; 29us; 21us; 19us; 24us; 78us; 25us; 24us; 30us; 16us; 31us; 77us; 32us; 76us; 33us; 75us; 1us; 32768us; 23us; 23us; 0us; 16393us; 3us; 16410us; 8us; 63us; 10us; 69us; 30us; 55us; 1us; 32768us; 26us; 26us; 12us; 32768us; 4us; 38us; 9us; 31us; 11us; 36us; 13us; 80us; 17us; 29us; 21us; 19us; 24us; 78us; 25us; 24us; 30us; 16us; 31us; 77us; 32us; 76us; 33us; 75us; 1us; 32768us; 27us; 28us; 0us; 16394us; 6us; 32768us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 0us; 16395us; 1us; 32768us; 30us; 32us; 1us; 32768us; 13us; 33us; 6us; 16422us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 1us; 32768us; 14us; 35us; 0us; 16396us; 6us; 32768us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 0us; 16397us; 6us; 32768us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 1us; 32768us; 5us; 40us; 12us; 32768us; 4us; 38us; 9us; 31us; 11us; 36us; 13us; 80us; 17us; 29us; 21us; 19us; 24us; 78us; 25us; 24us; 30us; 16us; 31us; 77us; 32us; 76us; 33us; 75us; 2us; 32768us; 6us; 42us; 7us; 45us; 12us; 32768us; 4us; 38us; 9us; 31us; 11us; 36us; 13us; 80us; 17us; 29us; 21us; 19us; 24us; 78us; 25us; 24us; 30us; 16us; 31us; 77us; 32us; 76us; 33us; 75us; 1us; 32768us; 7us; 44us; 0us; 16398us; 0us; 16399us; 1us; 32768us; 18us; 47us; 6us; 32768us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 0us; 16400us; 1us; 16401us; 20us; 50us; 12us; 32768us; 4us; 38us; 9us; 31us; 11us; 36us; 13us; 80us; 17us; 29us; 21us; 19us; 24us; 78us; 25us; 24us; 30us; 16us; 31us; 77us; 32us; 76us; 33us; 75us; 0us; 16402us; 1us; 16404us; 16us; 53us; 1us; 16403us; 30us; 52us; 0us; 16405us; 2us; 32768us; 2us; 58us; 15us; 56us; 6us; 32768us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 0us; 16406us; 6us; 32768us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 1us; 32768us; 3us; 60us; 1us; 32768us; 15us; 61us; 6us; 32768us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 0us; 16407us; 1us; 32768us; 30us; 64us; 1us; 32768us; 13us; 65us; 1us; 16403us; 30us; 52us; 1us; 32768us; 14us; 67us; 12us; 32768us; 4us; 38us; 9us; 31us; 11us; 36us; 13us; 80us; 17us; 29us; 21us; 19us; 24us; 78us; 25us; 24us; 30us; 16us; 31us; 77us; 32us; 76us; 33us; 75us; 0us; 16408us; 3us; 32768us; 8us; 63us; 10us; 69us; 30us; 55us; 0us; 16409us; 1us; 16411us; 20us; 72us; 3us; 16410us; 8us; 63us; 10us; 69us; 30us; 55us; 0us; 16412us; 3us; 16413us; 0us; 86us; 2us; 88us; 13us; 83us; 0us; 16414us; 0us; 16415us; 0us; 16416us; 6us; 32768us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 0us; 16417us; 6us; 32768us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 1us; 32768us; 14us; 82us; 0us; 16418us; 6us; 16422us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 1us; 32768us; 14us; 85us; 0us; 16419us; 1us; 32768us; 1us; 87us; 0us; 16420us; 6us; 32768us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 1us; 32768us; 3us; 90us; 0us; 16421us; 1us; 16423us; 16us; 92us; 6us; 16422us; 13us; 80us; 24us; 78us; 30us; 74us; 31us; 77us; 32us; 76us; 33us; 75us; 0us; 16424us; |]
-let _fsyacc_actionTableRowOffsets = [|0us; 13us; 14us; 21us; 22us; 29us; 30us; 34us; 35us; 48us; 49us; 62us; 63us; 67us; 68us; 70us; 71us; 76us; 83us; 84us; 91us; 93us; 106us; 108us; 109us; 113us; 115us; 128us; 130us; 131us; 138us; 139us; 141us; 143us; 150us; 152us; 153us; 160us; 161us; 168us; 170us; 183us; 186us; 199us; 201us; 202us; 203us; 205us; 212us; 213us; 215us; 228us; 229us; 231us; 233us; 234us; 237us; 244us; 245us; 252us; 254us; 256us; 263us; 264us; 266us; 268us; 270us; 272us; 285us; 286us; 290us; 291us; 293us; 297us; 298us; 302us; 303us; 304us; 305us; 312us; 313us; 320us; 322us; 323us; 330us; 332us; 333us; 335us; 336us; 343us; 345us; 346us; 348us; 355us; |]
-let _fsyacc_reductionSymbolCounts = [|1us; 1us; 1us; 1us; 1us; 1us; 1us; 2us; 3us; 5us; 5us; 2us; 5us; 2us; 7us; 5us; 3us; 1us; 3us; 0us; 1us; 3us; 3us; 6us; 6us; 2us; 0us; 1us; 3us; 1us; 1us; 1us; 1us; 2us; 3us; 4us; 3us; 4us; 0us; 1us; 3us; |]
-let _fsyacc_productionToNonTerminalTable = [|0us; 1us; 2us; 3us; 4us; 5us; 6us; 7us; 8us; 8us; 8us; 8us; 8us; 8us; 8us; 8us; 8us; 9us; 9us; 10us; 10us; 10us; 11us; 11us; 11us; 11us; 12us; 12us; 12us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 14us; 14us; 14us; |]
-let _fsyacc_immediateActions = [|65535us; 49152us; 65535us; 49152us; 65535us; 49152us; 65535us; 49152us; 65535us; 49152us; 65535us; 49152us; 65535us; 49152us; 65535us; 16391us; 65535us; 65535us; 16392us; 65535us; 65535us; 65535us; 65535us; 16393us; 65535us; 65535us; 65535us; 65535us; 16394us; 65535us; 16395us; 65535us; 65535us; 65535us; 65535us; 16396us; 65535us; 16397us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 16398us; 16399us; 65535us; 65535us; 16400us; 65535us; 65535us; 16402us; 65535us; 65535us; 16405us; 65535us; 65535us; 16406us; 65535us; 65535us; 65535us; 65535us; 16407us; 65535us; 65535us; 65535us; 65535us; 65535us; 16408us; 65535us; 16409us; 65535us; 65535us; 16412us; 65535us; 16414us; 16415us; 16416us; 65535us; 16417us; 65535us; 65535us; 16418us; 65535us; 65535us; 16419us; 65535us; 16420us; 65535us; 65535us; 16421us; 65535us; 65535us; 16424us; |]
+let _fsyacc_gotos = [| 0us; 65535us; 0us; 65535us; 0us; 65535us; 0us; 65535us; 0us; 65535us; 0us; 65535us; 0us; 65535us; 1us; 65535us; 0us; 1us; 10us; 65535us; 0us; 14us; 8us; 9us; 10us; 58us; 21us; 58us; 26us; 58us; 29us; 31us; 41us; 58us; 43us; 58us; 59us; 58us; 76us; 77us; 6us; 65535us; 10us; 11us; 21us; 22us; 26us; 27us; 41us; 42us; 43us; 44us; 59us; 60us; 2us; 65535us; 62us; 63us; 74us; 75us; 5us; 65535us; 6us; 80us; 12us; 13us; 24us; 80us; 78us; 79us; 81us; 80us; 3us; 65535us; 6us; 7us; 24us; 25us; 81us; 82us; 28us; 65535us; 0us; 47us; 2us; 3us; 4us; 100us; 8us; 47us; 10us; 47us; 17us; 18us; 19us; 20us; 21us; 47us; 26us; 47us; 29us; 30us; 34us; 100us; 37us; 38us; 39us; 40us; 41us; 47us; 43us; 47us; 48us; 49us; 51us; 52us; 55us; 100us; 59us; 47us; 65us; 66us; 67us; 68us; 70us; 71us; 76us; 47us; 87us; 88us; 89us; 90us; 92us; 100us; 97us; 98us; 101us; 100us; 5us; 65535us; 4us; 5us; 34us; 35us; 55us; 56us; 92us; 93us; 101us; 102us; |]
+let _fsyacc_sparseGotoTableRowOffsets = [|0us; 1us; 2us; 3us; 4us; 5us; 6us; 7us; 9us; 20us; 27us; 30us; 36us; 40us; 69us; |]
+let _fsyacc_stateToProdIdxsTableElements = [| 1us; 0us; 1us; 0us; 1us; 1us; 1us; 1us; 1us; 2us; 1us; 2us; 1us; 3us; 1us; 3us; 1us; 4us; 1us; 4us; 1us; 5us; 1us; 5us; 1us; 6us; 1us; 6us; 1us; 7us; 1us; 7us; 5us; 8us; 33us; 39us; 40us; 41us; 1us; 8us; 1us; 8us; 1us; 9us; 1us; 9us; 1us; 9us; 1us; 9us; 1us; 9us; 1us; 10us; 1us; 10us; 1us; 10us; 1us; 10us; 1us; 10us; 2us; 11us; 12us; 2us; 11us; 17us; 1us; 12us; 1us; 13us; 1us; 13us; 1us; 13us; 1us; 13us; 1us; 13us; 1us; 14us; 1us; 14us; 2us; 15us; 16us; 2us; 15us; 16us; 2us; 15us; 16us; 2us; 15us; 16us; 1us; 15us; 1us; 15us; 1us; 15us; 1us; 16us; 1us; 17us; 1us; 17us; 1us; 17us; 1us; 18us; 1us; 18us; 1us; 18us; 1us; 18us; 1us; 19us; 1us; 19us; 1us; 19us; 1us; 19us; 2us; 21us; 22us; 1us; 22us; 1us; 22us; 2us; 24us; 25us; 1us; 25us; 1us; 25us; 2us; 26us; 27us; 1us; 26us; 1us; 26us; 1us; 27us; 1us; 27us; 1us; 27us; 1us; 27us; 1us; 27us; 1us; 28us; 1us; 28us; 1us; 28us; 1us; 28us; 1us; 28us; 1us; 28us; 1us; 29us; 1us; 29us; 2us; 31us; 32us; 1us; 32us; 1us; 32us; 4us; 33us; 39us; 40us; 41us; 1us; 34us; 1us; 35us; 1us; 36us; 1us; 37us; 1us; 37us; 1us; 38us; 1us; 38us; 1us; 38us; 1us; 39us; 1us; 39us; 1us; 39us; 1us; 40us; 1us; 40us; 1us; 41us; 1us; 41us; 1us; 41us; 2us; 43us; 44us; 1us; 44us; 1us; 44us; |]
+let _fsyacc_stateToProdIdxsTableRowOffsets = [|0us; 2us; 4us; 6us; 8us; 10us; 12us; 14us; 16us; 18us; 20us; 22us; 24us; 26us; 28us; 30us; 32us; 38us; 40us; 42us; 44us; 46us; 48us; 50us; 52us; 54us; 56us; 58us; 60us; 62us; 65us; 68us; 70us; 72us; 74us; 76us; 78us; 80us; 82us; 84us; 87us; 90us; 93us; 96us; 98us; 100us; 102us; 104us; 106us; 108us; 110us; 112us; 114us; 116us; 118us; 120us; 122us; 124us; 126us; 129us; 131us; 133us; 136us; 138us; 140us; 143us; 145us; 147us; 149us; 151us; 153us; 155us; 157us; 159us; 161us; 163us; 165us; 167us; 169us; 171us; 173us; 176us; 178us; 180us; 185us; 187us; 189us; 191us; 193us; 195us; 197us; 199us; 201us; 203us; 205us; 207us; 209us; 211us; 213us; 215us; 217us; 220us; 222us; |]
+let _fsyacc_action_rows = 103
+let _fsyacc_actionTableElements = [|14us; 32768us; 0us; 50us; 1us; 54us; 6us; 39us; 11us; 32us; 13us; 37us; 15us; 89us; 19us; 29us; 23us; 19us; 26us; 87us; 27us; 24us; 32us; 16us; 33us; 86us; 34us; 85us; 35us; 84us; 0us; 49152us; 6us; 32768us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 0us; 49152us; 6us; 16426us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 0us; 49152us; 3us; 16414us; 10us; 72us; 12us; 78us; 32us; 64us; 0us; 49152us; 14us; 32768us; 0us; 50us; 1us; 54us; 6us; 39us; 11us; 32us; 13us; 37us; 15us; 89us; 19us; 29us; 23us; 19us; 26us; 87us; 27us; 24us; 32us; 16us; 33us; 86us; 34us; 85us; 35us; 84us; 0us; 49152us; 14us; 16404us; 0us; 50us; 1us; 54us; 6us; 39us; 11us; 32us; 13us; 37us; 15us; 89us; 19us; 29us; 23us; 19us; 26us; 87us; 27us; 24us; 32us; 16us; 33us; 86us; 34us; 85us; 35us; 84us; 0us; 49152us; 3us; 32768us; 10us; 72us; 12us; 78us; 32us; 64us; 0us; 49152us; 1us; 32768us; 14us; 15us; 0us; 16391us; 4us; 16417us; 2us; 95us; 4us; 97us; 15us; 92us; 20us; 17us; 6us; 32768us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 0us; 16392us; 6us; 32768us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 1us; 32768us; 24us; 21us; 14us; 16404us; 0us; 50us; 1us; 54us; 6us; 39us; 11us; 32us; 13us; 37us; 15us; 89us; 19us; 29us; 23us; 19us; 26us; 87us; 27us; 24us; 32us; 16us; 33us; 86us; 34us; 85us; 35us; 84us; 1us; 32768us; 25us; 23us; 0us; 16393us; 3us; 16414us; 10us; 72us; 12us; 78us; 32us; 64us; 1us; 32768us; 28us; 26us; 14us; 16404us; 0us; 50us; 1us; 54us; 6us; 39us; 11us; 32us; 13us; 37us; 15us; 89us; 19us; 29us; 23us; 19us; 26us; 87us; 27us; 24us; 32us; 16us; 33us; 86us; 34us; 85us; 35us; 84us; 1us; 32768us; 29us; 28us; 0us; 16394us; 14us; 32768us; 0us; 50us; 1us; 54us; 6us; 39us; 11us; 32us; 13us; 37us; 15us; 89us; 19us; 29us; 23us; 19us; 26us; 87us; 27us; 24us; 32us; 16us; 33us; 86us; 34us; 85us; 35us; 84us; 1us; 16395us; 20us; 48us; 0us; 16396us; 1us; 32768us; 32us; 33us; 1us; 32768us; 15us; 34us; 6us; 16426us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 1us; 32768us; 16us; 36us; 0us; 16397us; 6us; 32768us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 0us; 16398us; 6us; 32768us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 1us; 32768us; 7us; 41us; 14us; 16404us; 0us; 50us; 1us; 54us; 6us; 39us; 11us; 32us; 13us; 37us; 15us; 89us; 19us; 29us; 23us; 19us; 26us; 87us; 27us; 24us; 32us; 16us; 33us; 86us; 34us; 85us; 35us; 84us; 2us; 32768us; 8us; 43us; 9us; 46us; 14us; 16404us; 0us; 50us; 1us; 54us; 6us; 39us; 11us; 32us; 13us; 37us; 15us; 89us; 19us; 29us; 23us; 19us; 26us; 87us; 27us; 24us; 32us; 16us; 33us; 86us; 34us; 85us; 35us; 84us; 1us; 32768us; 9us; 45us; 0us; 16399us; 0us; 16400us; 1us; 32768us; 20us; 48us; 6us; 32768us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 0us; 16401us; 1us; 32768us; 15us; 51us; 6us; 32768us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 1us; 32768us; 16us; 53us; 0us; 16402us; 1us; 32768us; 15us; 55us; 6us; 16426us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 1us; 32768us; 16us; 57us; 0us; 16403us; 1us; 16405us; 22us; 59us; 14us; 16404us; 0us; 50us; 1us; 54us; 6us; 39us; 11us; 32us; 13us; 37us; 15us; 89us; 19us; 29us; 23us; 19us; 26us; 87us; 27us; 24us; 32us; 16us; 33us; 86us; 34us; 85us; 35us; 84us; 0us; 16406us; 1us; 16408us; 18us; 62us; 1us; 16407us; 32us; 61us; 0us; 16409us; 2us; 32768us; 4us; 67us; 17us; 65us; 6us; 32768us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 0us; 16410us; 6us; 32768us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 1us; 32768us; 5us; 69us; 1us; 32768us; 17us; 70us; 6us; 32768us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 0us; 16411us; 1us; 32768us; 32us; 73us; 1us; 32768us; 15us; 74us; 1us; 16407us; 32us; 61us; 1us; 32768us; 16us; 76us; 14us; 32768us; 0us; 50us; 1us; 54us; 6us; 39us; 11us; 32us; 13us; 37us; 15us; 89us; 19us; 29us; 23us; 19us; 26us; 87us; 27us; 24us; 32us; 16us; 33us; 86us; 34us; 85us; 35us; 84us; 0us; 16412us; 3us; 32768us; 10us; 72us; 12us; 78us; 32us; 64us; 0us; 16413us; 1us; 16415us; 22us; 81us; 3us; 16414us; 10us; 72us; 12us; 78us; 32us; 64us; 0us; 16416us; 3us; 16417us; 2us; 95us; 4us; 97us; 15us; 92us; 0us; 16418us; 0us; 16419us; 0us; 16420us; 6us; 32768us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 0us; 16421us; 6us; 32768us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 1us; 32768us; 16us; 91us; 0us; 16422us; 6us; 16426us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 1us; 32768us; 16us; 94us; 0us; 16423us; 1us; 32768us; 3us; 96us; 0us; 16424us; 6us; 32768us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 1us; 32768us; 5us; 99us; 0us; 16425us; 1us; 16427us; 18us; 101us; 6us; 16426us; 15us; 89us; 26us; 87us; 32us; 83us; 33us; 86us; 34us; 85us; 35us; 84us; 0us; 16428us; |]
+let _fsyacc_actionTableRowOffsets = [|0us; 15us; 16us; 23us; 24us; 31us; 32us; 36us; 37us; 52us; 53us; 68us; 69us; 73us; 74us; 76us; 77us; 82us; 89us; 90us; 97us; 99us; 114us; 116us; 117us; 121us; 123us; 138us; 140us; 141us; 156us; 158us; 159us; 161us; 163us; 170us; 172us; 173us; 180us; 181us; 188us; 190us; 205us; 208us; 223us; 225us; 226us; 227us; 229us; 236us; 237us; 239us; 246us; 248us; 249us; 251us; 258us; 260us; 261us; 263us; 278us; 279us; 281us; 283us; 284us; 287us; 294us; 295us; 302us; 304us; 306us; 313us; 314us; 316us; 318us; 320us; 322us; 337us; 338us; 342us; 343us; 345us; 349us; 350us; 354us; 355us; 356us; 357us; 364us; 365us; 372us; 374us; 375us; 382us; 384us; 385us; 387us; 388us; 395us; 397us; 398us; 400us; 407us; |]
+let _fsyacc_reductionSymbolCounts = [|1us; 1us; 1us; 1us; 1us; 1us; 1us; 2us; 3us; 5us; 5us; 2us; 2us; 5us; 2us; 7us; 5us; 3us; 4us; 4us; 0us; 1us; 3us; 0us; 1us; 3us; 3us; 6us; 6us; 2us; 0us; 1us; 3us; 1us; 1us; 1us; 1us; 2us; 3us; 4us; 3us; 4us; 0us; 1us; 3us; |]
+let _fsyacc_productionToNonTerminalTable = [|0us; 1us; 2us; 3us; 4us; 5us; 6us; 7us; 8us; 8us; 8us; 8us; 8us; 8us; 8us; 8us; 8us; 8us; 8us; 8us; 9us; 9us; 9us; 10us; 10us; 10us; 11us; 11us; 11us; 11us; 12us; 12us; 12us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 14us; 14us; 14us; |]
+let _fsyacc_immediateActions = [|65535us; 49152us; 65535us; 49152us; 65535us; 49152us; 65535us; 49152us; 65535us; 49152us; 65535us; 49152us; 65535us; 49152us; 65535us; 16391us; 65535us; 65535us; 16392us; 65535us; 65535us; 65535us; 65535us; 16393us; 65535us; 65535us; 65535us; 65535us; 16394us; 65535us; 65535us; 16396us; 65535us; 65535us; 65535us; 65535us; 16397us; 65535us; 16398us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 16399us; 16400us; 65535us; 65535us; 16401us; 65535us; 65535us; 65535us; 16402us; 65535us; 65535us; 65535us; 16403us; 65535us; 65535us; 16406us; 65535us; 65535us; 16409us; 65535us; 65535us; 16410us; 65535us; 65535us; 65535us; 65535us; 16411us; 65535us; 65535us; 65535us; 65535us; 65535us; 16412us; 65535us; 16413us; 65535us; 65535us; 16416us; 65535us; 16418us; 16419us; 16420us; 65535us; 16421us; 65535us; 65535us; 16422us; 65535us; 65535us; 16423us; 65535us; 16424us; 65535us; 65535us; 16425us; 65535us; 65535us; 16428us; |]
 let _fsyacc_reductions ()  =    [| 
-# 317 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 333 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Stm)) in
             Microsoft.FSharp.Core.Operators.box
@@ -323,7 +339,7 @@ let _fsyacc_reductions ()  =    [|
                       raise (Microsoft.FSharp.Text.Parsing.Accept(Microsoft.FSharp.Core.Operators.box _1))
                    )
                  : '_startMain));
-# 326 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 342 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
             Microsoft.FSharp.Core.Operators.box
@@ -332,7 +348,7 @@ let _fsyacc_reductions ()  =    [|
                       raise (Microsoft.FSharp.Text.Parsing.Accept(Microsoft.FSharp.Core.Operators.box _1))
                    )
                  : '_startExp));
-# 335 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 351 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Exp list)) in
             Microsoft.FSharp.Core.Operators.box
@@ -341,7 +357,7 @@ let _fsyacc_reductions ()  =    [|
                       raise (Microsoft.FSharp.Text.Parsing.Accept(Microsoft.FSharp.Core.Operators.box _1))
                    )
                  : '_startExpList));
-# 344 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 360 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Dec list)) in
             Microsoft.FSharp.Core.Operators.box
@@ -350,7 +366,7 @@ let _fsyacc_reductions ()  =    [|
                       raise (Microsoft.FSharp.Text.Parsing.Accept(Microsoft.FSharp.Core.Operators.box _1))
                    )
                  : '_startDecList));
-# 353 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 369 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Stm)) in
             Microsoft.FSharp.Core.Operators.box
@@ -359,7 +375,7 @@ let _fsyacc_reductions ()  =    [|
                       raise (Microsoft.FSharp.Text.Parsing.Accept(Microsoft.FSharp.Core.Operators.box _1))
                    )
                  : '_startStm));
-# 362 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 378 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Stm list)) in
             Microsoft.FSharp.Core.Operators.box
@@ -368,7 +384,7 @@ let _fsyacc_reductions ()  =    [|
                       raise (Microsoft.FSharp.Text.Parsing.Accept(Microsoft.FSharp.Core.Operators.box _1))
                    )
                  : '_startStmList));
-# 371 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 387 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Dec)) in
             Microsoft.FSharp.Core.Operators.box
@@ -377,88 +393,99 @@ let _fsyacc_reductions ()  =    [|
                       raise (Microsoft.FSharp.Text.Parsing.Accept(Microsoft.FSharp.Core.Operators.box _1))
                    )
                  : '_startDec));
-# 380 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 396 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Stm)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 31 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 32 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                _1 
                    )
-# 31 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 32 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Stm));
-# 391 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 407 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 34 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 35 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                              Asg(Var _1,_3) 
                    )
-# 34 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 35 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Stm));
-# 403 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 419 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : Stm list)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 35 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 36 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                        While(_2,Seq _4) 
                    )
-# 35 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 36 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Stm));
-# 415 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 431 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Dec list)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : Stm list)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 36 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 37 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 Block(_2,Seq _4) 
                    )
-# 36 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 37 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Stm));
-# 427 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 443 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 37 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 38 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 PrintLn _2 
                    )
-# 37 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 38 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Stm));
-# 438 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 454 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Stm)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 39 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+                                                                PrintStm _2 
+                   )
+# 39 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+                 : Stm));
+# 465 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : Exp list)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 38 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 40 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 Call(_2,_4) 
                    )
-# 38 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 40 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Stm));
-# 450 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 477 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 39 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 41 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                              Return(_2) 
                    )
-# 39 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 41 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Stm));
-# 461 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 488 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : Stm list)) in
@@ -466,104 +493,136 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 40 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 42 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 If(_2,Seq _4,Seq _6) 
                    )
-# 40 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 42 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Stm));
-# 474 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 501 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : Stm list)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 41 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 43 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 If1(_2,Seq _4) 
                    )
-# 41 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 43 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Stm));
-# 486 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 513 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 42 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 44 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                               Asg(_1, _3) 
                    )
-# 42 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 44 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Stm));
-# 498 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 525 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 45 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+                                                                Read(_3) 
+                   )
+# 45 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+                 : Stm));
+# 536 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Exp list)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 46 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+                                                                Write(_3) 
+                   )
+# 46 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+                 : Stm));
+# 547 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 49 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+                                []
+                   )
+# 49 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+                 : Stm list));
+# 557 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Stm)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 45 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
-                                                               [_1] 
+# 50 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+                                                                [_1] 
                    )
-# 45 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 50 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Stm list));
-# 509 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 568 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Stm)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Stm list)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 46 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 51 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                _1 :: _3 
                    )
-# 46 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 51 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Stm list));
-# 521 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 580 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 49 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 54 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                  [] 
                    )
-# 49 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 54 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : 'VarList));
-# 531 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 590 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 50 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 55 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                  [_1] 
                    )
-# 50 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 55 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : 'VarList));
-# 542 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 601 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'VarList)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 51 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 56 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                  _1 :: _3 
                    )
-# 51 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 56 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : 'VarList));
-# 554 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 613 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 54 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 59 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 VarDec(_1,_3) 
                    )
-# 54 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 59 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Dec));
-# 566 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 625 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
@@ -571,12 +630,12 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 55 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 60 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 ArrayDec(_1,_3,_6) 
                    )
-# 55 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 60 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Dec));
-# 579 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 638 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'VarList)) in
@@ -584,191 +643,191 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 56 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 61 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 ProcDec(_2,_4,_6)
                    )
-# 56 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 61 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Dec));
-# 592 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 651 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Dec)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 57 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 62 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 RecDec(_2) 
                    )
-# 57 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 62 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Dec));
-# 603 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 662 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 60 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 65 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                [] 
                    )
-# 60 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 65 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Dec list));
-# 613 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 672 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Dec)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 61 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 66 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                [_1] 
                    )
-# 61 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 66 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Dec list));
-# 624 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 683 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Dec)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Dec list)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 62 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 67 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                _1 :: _3 
                    )
-# 62 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 67 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Dec list));
-# 636 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 695 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 65 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 70 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 Var _1  
                    )
-# 65 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 70 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Exp));
-# 647 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 706 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : int)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 66 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 71 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 Int _1 
                    )
-# 66 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 71 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Exp));
-# 658 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 717 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : bool)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 67 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 72 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 Bool _1 
                    )
-# 67 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 72 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Exp));
-# 669 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 728 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 68 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 73 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 String _1
                    )
-# 68 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 73 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Exp));
-# 680 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 739 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 69 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 74 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 ContOf _2 
                    )
-# 69 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 74 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Exp));
-# 691 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 750 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 70 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 75 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 _2 
                    )
-# 70 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 75 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Exp));
-# 702 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 761 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Exp list)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 71 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 76 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 Apply(_1, _3) 
                    )
-# 71 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 76 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Exp));
-# 714 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 773 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 72 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 77 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 Length(_1) 
                    )
-# 72 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 77 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Exp));
-# 725 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 784 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 73 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 78 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                 ArrayExp(_1,_3) 
                    )
-# 73 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 78 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Exp));
-# 737 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 796 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 76 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 81 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                [ ] 
                    )
-# 76 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 81 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Exp list));
-# 747 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 806 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 77 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 82 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                [_1]   
                    )
-# 77 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 82 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Exp list));
-# 758 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 817 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Exp)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Exp list)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 78 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 83 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                                                                _1 :: _3 
                    )
-# 78 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
+# 83 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fsy"
                  : Exp list));
 |]
-# 771 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
+# 830 "C:\Users\Anne-Katrine Binder\Downloads\Anvendt-Funktionsprogrammering\ImpProgLang\Parser.fs"
 let tables () : Microsoft.FSharp.Text.Parsing.Tables<_> = 
   { reductions= _fsyacc_reductions ();
     endOfInputTag = _fsyacc_endOfInputTag;
@@ -787,7 +846,7 @@ let tables () : Microsoft.FSharp.Text.Parsing.Tables<_> =
                               match parse_error_rich with 
                               | Some f -> f ctxt
                               | None -> parse_error ctxt.Message);
-    numTerminals = 37;
+    numTerminals = 39;
     productionToNonTerminalTable = _fsyacc_productionToNonTerminalTable  }
 let engine lexer lexbuf startState = (tables ()).Interpret(lexer, lexbuf, startState)
 let Main lexer lexbuf : Stm =

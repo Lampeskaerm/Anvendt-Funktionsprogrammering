@@ -1,0 +1,3 @@
+﻿let	x: "readEx.txt"
+in print readFile(!x)
+end
